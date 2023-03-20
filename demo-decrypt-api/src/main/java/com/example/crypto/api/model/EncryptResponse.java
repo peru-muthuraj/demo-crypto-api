@@ -2,12 +2,10 @@ package com.example.crypto.api.model;
 
 import lombok.Data;
 import org.springframework.lang.Nullable;
-import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotNull;
 
 @Data
-@Component
 public class EncryptResponse {
 
     @NotNull(message = "CipherAlgorithm cannot be null")

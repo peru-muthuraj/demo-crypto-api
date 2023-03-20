@@ -23,7 +23,6 @@ public class EncryptController {
 
     private final EncryptService encryptService;
 
-
     @PostMapping(value = "/encrypt", consumes = "application/json", produces = "application/json")
     public ResponseEntity<EncryptResponse> encrypt(
             @RequestBody @Valid EncryptRequest request) throws Exception {

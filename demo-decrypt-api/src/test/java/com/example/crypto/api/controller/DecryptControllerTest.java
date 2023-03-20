@@ -2,6 +2,7 @@ package com.example.crypto.api.controller;
 
 import com.example.crypto.api.model.DecryptRequest;
 import com.example.crypto.api.model.DecryptRequestWithIV;
+import com.example.crypto.api.model.DecryptResponse;
 import com.example.crypto.api.service.DecryptService;
 import com.example.crypto.api.service.HashService;
 import com.example.crypto.api.service.ReusableCipher;
@@ -12,17 +13,20 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import javax.crypto.Cipher;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DecryptControllerTest {
@@ -39,7 +43,14 @@ public class DecryptControllerTest {
     @InjectMocks
     private DecryptController decryptController;
 
+
+    @Autowired
+    private DecryptResponse decryptResponse;
+
     private MockMvc mockMvc;
+
+    public DecryptControllerTest() {
+    }
 
     @Before
     public void setUp() {
@@ -66,15 +77,21 @@ public class DecryptControllerTest {
         doReturn(decryptedText).when(decryptService).decrypt(cipher, request.getCipherText());
         doReturn(hashedText).when(hashService).hash(hashingAlgorithm, decryptedText);
 
-        mockMvc.perform(post("/crypto/api/decrypt")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(content().string(hashedText));
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/crypto/api/decrypt")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(request));
+
+
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        String expected = "{\"hashedText\":\"" + hashedText + "\"}";
+        JSONAssert.assertEquals(expected, result.getResponse().getContentAsString(), false);
     }
 
     @Test
     public void testDecryptControllerDecrypt_DESAlgorithm() throws Exception {
+        //Given
         String cipherText = "qlW1WyuCiMCZOyVFhI36NVTPEnJrKNHE";
         String password = "password";
         String hashingAlgorithm = "SHA-224";
@@ -93,15 +110,24 @@ public class DecryptControllerTest {
         doReturn(decryptedText).when(decryptService).decrypt(cipher, request.getCipherText());
         doReturn(hashedText).when(hashService).hash(hashingAlgorithm, decryptedText);
 
-        mockMvc.perform(post("/crypto/api/decrypt")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(content().string(hashedText));
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/crypto/api/decrypt")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(request));
+
+
+        //When
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        String expected = "{\"hashedText\":\"" + hashedText + "\"}";
+
+        //Then
+        JSONAssert.assertEquals(expected, result.getResponse().getContentAsString(), false);
     }
 
     @Test
     public void testDecryptControllerDecrypt_BlowFishAlgorithm() throws Exception {
+        //Given
         String cipherText = "2zA6vZJZWDuldNqMkH1ZMV6KYCtq6n8h";
         String password = "passwordpassword";
         String hashingAlgorithm = "SHA-224";
@@ -120,15 +146,24 @@ public class DecryptControllerTest {
         doReturn(decryptedText).when(decryptService).decrypt(cipher, request.getCipherText());
         doReturn(hashedText).when(hashService).hash(hashingAlgorithm, decryptedText);
 
-        mockMvc.perform(post("/crypto/api/decrypt")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(content().string(hashedText));
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/crypto/api/decrypt")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(request));
+
+
+        //When
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        String expected = "{\"hashedText\":\"" + hashedText + "\"}";
+
+        //Then
+        JSONAssert.assertEquals(expected, result.getResponse().getContentAsString(), false);
     }
 
     @Test
     public void testDecryptControllerDecryptWithIv() throws Exception {
+        //Given
         String cipherText = "6+ZOKgw5sblUlV456zx0WKjW9RIgzSJpV0IV6RwljM0=";
         String password = "passwordpassword";
         String hashingAlgorithm = "SHA-256";
@@ -149,11 +184,21 @@ public class DecryptControllerTest {
         doReturn(decryptedText).when(decryptService).decrypt(cipher, request.getCipherText());
         doReturn(hashedText).when(hashService).hash(hashingAlgorithm, decryptedText);
 
-        mockMvc.perform(post("/crypto/api/decrypt-with-iv")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(content().string(hashedText));
+
+        RequestBuilder requestBuilder = MockMvcRequestBuilders
+                .post("/crypto/api/decrypt-with-iv")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(request));
+
+
+        //When
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        String expected = "{\"hashedText\":\"" + hashedText + "\"}";
+
+        //Then
+        JSONAssert.assertEquals(expected, result.getResponse().getContentAsString(), false);
+
     }
 
     @Test

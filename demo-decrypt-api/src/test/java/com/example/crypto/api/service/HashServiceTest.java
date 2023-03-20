@@ -16,6 +16,7 @@ public class HashServiceTest {
     void setUp() {
         hashService = new HashService();
     }
+
     @Test
     public void testHashWithValidAlgorithm() throws NoSuchAlgorithmException {
         String inputText = "test123";

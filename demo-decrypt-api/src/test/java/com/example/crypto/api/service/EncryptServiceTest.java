@@ -15,7 +15,8 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class EncryptServiceTest {
 
@@ -49,6 +50,32 @@ class EncryptServiceTest {
         Cipher cipher = Cipher.getInstance(cipherAlgorithm);
         SecretKeySpec secretKeySpec = new SecretKeySpec(password.getBytes(), "AES");
         cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, new IvParameterSpec(ivBytes));
+        String decryptedText = new String(cipher.doFinal(encryptedBytes));
+
+        assertEquals(plainText, decryptedText);
+    }
+
+    @Test
+    void testEncryptTripelDES() throws NoSuchPaddingException, InvalidKeyException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, InvalidAlgorithmParameterException {
+        // Arrange
+        String cipherAlgorithm = "TripleDES";
+        String plainText = "This is a test message.";
+        String password = "passwordpasswordpassword";
+
+        // Act
+        EncryptedData encryptedData = encryptService.encrypt(cipherAlgorithm, plainText, password);
+
+        // Assert
+        assertNotNull(encryptedData);
+        assertNotNull(encryptedData.getEncryptedText());
+
+        // Verify that the encrypted data can be decrypted
+        byte[] encryptedBytes = Base64.getDecoder().decode(encryptedData.getEncryptedText());
+
+        //Verify Encrypted value match with the given plain text after decryption
+        Cipher cipher = Cipher.getInstance(cipherAlgorithm);
+        SecretKeySpec secretKeySpec = new SecretKeySpec(password.getBytes(), cipherAlgorithm);
+        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec);
         String decryptedText = new String(cipher.doFinal(encryptedBytes));
 
         assertEquals(plainText, decryptedText);
