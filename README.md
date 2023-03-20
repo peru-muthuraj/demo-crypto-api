@@ -44,38 +44,38 @@ The POST /encrypt endpoint can be used to encrypt data using various encryption 
 #### Encrypt with Algorithm default with ECB mode (Initialization Vector Not needed)
 ```
 {
-"cipherAlgorithm": "AES",
-"plainText": "This is a sample plain text.",
-"password": "passwordpassword"
+      "cipherAlgorithm" : "AES",
+      "plainText" : "This is a test message.",
+      "password" : "passwordpassword"
 }
 ```
 
 ### Response Body:
 ```
 {
-"encrypted": "encrypted text",
-"password": "password",
-"cipherAlgorithm": "AES",
-"iv": null
+    "cipherAlgorithm": "AES",
+    "encrypted": "8mx5YmL7Cy6Gh7bSAdAxZhXF63OgBaI7sT11J8T4bhU=",
+    "password": "passwordpassword",
+    "iv": null
 }
 ```
 
 #### Encrypt with Algorithm with mode other than ECB  (Initialization Vector needed)
 ```
 {
-"cipherAlgorithm": "AES/CBC/PKCS5Padding",
-"plainText": "This is a sample plain text.",
-"password": "passwordpassword"
+      "cipherAlgorithm" : "BlowFish/CBC/PKCS5Padding",
+      "plainText" : "This is a test message.",
+      "password" : "password"
 }
 ```
 
 ### Response Body:
 ```
 {
-"encrypted": "encrypted text",
-"password": "password",
-"cipherAlgorithm": "AES/CBC/PKCS5Padding",
-"iv": "iv"
+    "cipherAlgorithm": "BlowFish/CBC/PKCS5Padding",
+    "encrypted": "iDl2umaqZF/sr+XCPd/zeRrNDPkdaNeH",
+    "password": "password",
+    "iv": "qNnY14/ek6I="
 }
 ```
 
@@ -94,16 +94,16 @@ Decrypted cipher data will be hashed with given hashing algorithm.
 
 ```
 {
-"cipherAlgorithm": "AES/ECB/PKCS5Padding",
-"cipherText": "encrypted text",
-"password": "password",
-"hashingAlgorithm": "SHA-256"
+    "cipherAlgorithm": "AES",
+    "cipherText": "xC3BJgbe0/lrTXIKMYjCurVN4vQH/iFcA5vMLgJRmEk=",
+    "password": "passwordpasswordpassword",
+    "hashingAlgorithm" : "SHA-224"
 }
 ```
 #### Response Body:
 ```
 {
-"hashedText": "hashed text"
+    "hashedText": "QB19lReAs5VStaujXfXaE+wR0LbOrtqK3pEEqA=="
 }
 ```
 ## Decrypt with IV
@@ -116,17 +116,17 @@ This endpoint require encoded iv in the request parameter for decryption.
 #### Request Body:
 ```
 {
-"cipherAlgorithm": "AES/CBC/PKCS5Padding",
-"cipherText": "encrypted text",
-"password": "password",
-"hashingAlgorithm": "SHA-256",
-"iv": "iv"
+      "cipherAlgorithm" : "AES/CBC/PKCS5Padding",
+      "cipherText" : "ABM0bcv6BgHybkJqXp0ntHB7dYezImeQQUqnF1txaHc=",
+      "password" : "passwordpasswordpassword",
+      "hashingAlgorithm" : "SHA-256",
+       "iv": "O0Cz/n0yNTw8Eg85W0/w9w=="
 }
 ```
 #### Response Body:
 ```
 {
-"hashedText": "hashed text"
+    "hashedText": "Bmi1Fb/EG5C2qQpq6GACVuHHamfRfHiiYSfd65syRDU="
 }
 ```
 
