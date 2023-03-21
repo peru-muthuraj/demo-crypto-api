@@ -53,6 +53,7 @@ public class ReusableCipher {
             log.info("Returning existing cipher");
             //If cipher object is present in the map and is not expired, return the same cipher object and reset the time
             cipherData.resetExpiry();
+            scheduleExpiry(key);
             return cipherData.getCipher();
         }
     }
@@ -81,7 +82,9 @@ public class ReusableCipher {
     }
 
     private void scheduleExpiry(String key) {
-        scheduler.schedule(() -> cipherMap.remove(key), TEN_MINUTES, TimeUnit.MILLISECONDS);
+        log.info("Create Expiry Task to remove the thread after 10 minutes");
+        ScheduledFuture<?> expiryTask = scheduler.schedule(() -> cipherMap.remove(key), TEN_MINUTES, TimeUnit.MILLISECONDS);
+        cipherMap.get(key).setExpiryTask(expiryTask);
     }
 
     public void close() {
@@ -91,10 +94,15 @@ public class ReusableCipher {
     private class CipherData {
         private final Cipher cipher;
         private volatile long expiryTime;
+        private ScheduledFuture<?> expiryTask;
 
         public CipherData(Cipher cipher) {
             this.cipher = cipher;
             this.resetExpiry();
+        }
+
+        public void setExpiryTask(ScheduledFuture<?> expiryTask) {
+            this.expiryTask = expiryTask;
         }
 
         public Cipher getCipher() {
@@ -106,7 +114,11 @@ public class ReusableCipher {
         }
 
         public void resetExpiry() {
-            expiryTime = System.currentTimeMillis() + (10 * 60 * 1000);
+            expiryTime = System.currentTimeMillis() + TEN_MINUTES;
+            log.info("Cancel the existing expiryTask when the timer reset");
+            if (expiryTask != null) {
+            expiryTask.cancel(true);
+            }
         }
     }
 }
